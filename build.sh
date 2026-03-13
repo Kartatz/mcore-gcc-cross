@@ -80,7 +80,7 @@ declare -r curl_directory="${workdir}/submodules/curl"
 declare -r nz_directory="${workdir}/submodules/nz"
 declare -r nz_prefix="${build_directory}/nz"
 
-declare -r ccflags='-w -O2'
+declare -r ccflags='-w -Oz'
 declare -r linkflags='-Xlinker -s'
 
 declare exe=''
@@ -164,7 +164,6 @@ fi
 	
 declare -r binutils_wrapper="${build_directory}/binutils-gnu-wrapper${exe}"
 
-rm --force --recursive "${toolchain_directory}"
 mkdir --parent "${build_directory}"
 
 export PATH="${build_directory}:${build_directory}/bin:${PATH}"
@@ -627,6 +626,7 @@ make \
 
 for triplet in "${targets[@]}"; do
 	declare specs='%{!Qy: -Qn}'
+	declare extra_configure_flags=''
 	
 	[ -d "${binutils_directory}/build" ] || mkdir "${binutils_directory}/build"
 	
@@ -770,18 +770,28 @@ for triplet in "${targets[@]}"; do
 	
 	rm --force --recursive "${PWD}"
 	
-	cd "${toolchain_directory}/${triplet}/lib"
-	
-	ln \
-		--symbolic \
-		--relative \
-		"${toolchain_directory}/lib/gcc/${triplet}/${gcc_major}/"* \
-		'./'
-	
-	unlink 'include'
-	unlink 'include-fixed'
-	unlink 'install-tools'
-	unlink 'plugin'
+	if [ -d "${build_directory}/mcore-gcc-cross-bin/mcore-elf/lib" ]; then
+		echo "${build_directory}/mcore-gcc-cross-bin/mcore-elf/lib"
+		
+		cp \
+			--recursive \
+			--dereference \
+			"${build_directory}/mcore-gcc-cross-bin/mcore-elf/lib" \
+			"${toolchain_directory}/${triplet}"
+	else
+		cd "${toolchain_directory}/${triplet}/lib"
+		
+		ln \
+			--symbolic \
+			--relative \
+			"${toolchain_directory}/lib/gcc/${triplet}/${gcc_major}/"* \
+			'./'
+		
+		unlink 'include'
+		unlink 'include-fixed'
+		unlink 'install-tools'
+		unlink 'plugin'
+	fi
 	
 	rm \
 		--force \
