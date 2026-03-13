@@ -467,13 +467,6 @@ sed \
 	"${mpfr_directory}/configure" \
 	"${gmp_directory}/configure"
 
-# Force GCC and binutils to prefix host tools with the target triplet even in native builds
-sed \
-	--in-place \
-	's/test "$host_noncanonical" = "$target_noncanonical"/false/' \
-	"${gcc_directory}/configure" \
-	"${binutils_directory}/configure"
-
 [ -d "${gmp_directory}/build" ] || mkdir "${gmp_directory}/build"
 
 cd "${gmp_directory}/build"
@@ -678,11 +671,6 @@ for triplet in "${targets[@]}"; do
 		extra_configure_flags+=' --enable-host-shared'
 	fi
 	
-	if ! (( native )); then
-		extra_configure_flags+=" --with-cross-host=${host}"
-		extra_configure_flags+=" --with-toolexeclibdir=${toolchain_directory}/${triplet}/lib/"
-	fi
-	
 	if (( gcc_major <= 6 )); then
 		# GCC 6 and earlier use isl_multi_val_set_val(), which was removed in
 		# newer versions of isl. Using an outdated isl version just to make
@@ -711,7 +699,6 @@ for triplet in "${targets[@]}"; do
 		--enable-cet='auto' \
 		--enable-checking='release' \
 		--enable-link-serialization='1' \
-		--enable-linker-build-id \
 		--enable-lto \
 		--enable-static \
 		--enable-languages="${languages}" \
