@@ -716,6 +716,7 @@ for triplet in "${targets[@]}"; do
 		--enable-static \
 		--enable-languages="${languages}" \
 		--enable-plugin \
+		--enable-multilib \
 		--with-specs="${specs}" \
 		--with-pic \
 		--with-gnu-as \
@@ -726,7 +727,6 @@ for triplet in "${targets[@]}"; do
 		--disable-libssp \
 		--disable-libstdcxx \
 		--disable-werror \
-		--disable-multilib \
 		--disable-nls \
 		--disable-canonical-system-headers \
 		--disable-win32-utf8-manifest \
@@ -788,8 +788,13 @@ for triplet in "${targets[@]}"; do
 	ln \
 		--symbolic \
 		--relative \
-		"${toolchain_directory}/lib/gcc/${triplet}/${gcc_major}/"*'.'{a,o} \
+		"${toolchain_directory}/lib/gcc/${triplet}/${gcc_major}/"* \
 		'./'
+	
+	unlink 'include'
+	unlink 'include-fixed'
+	unlink 'install-tools'
+	unlink 'plugin'
 	
 	rm \
 		--force \
