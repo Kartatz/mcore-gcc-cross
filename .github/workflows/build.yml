@@ -15,8 +15,8 @@ permissions: write-all
 env: 
     MCORE_BUILD_PARALLEL_LEVEL: 40
     MCORE_BUILD_DIRECTORY: /tmp
-    MCORE_RELEASE: 15
-
+    MCORE_RELEASE: 14
+    
 jobs:
   native-build:
     name: 'Native build'
