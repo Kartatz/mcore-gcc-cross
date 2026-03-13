@@ -399,6 +399,10 @@ if ! [ -f "${gcc_tarball}" ]; then
 			"${workdir}/submodules/obggcc/patches/gcc-"*"/0007-Add-relative-RPATHs-to-GCC-host-tools.patch"
 	fi
 	
+	if (( gcc_major <= 13 )); then
+		patch --directory="${gcc_directory}" --strip='1' --input="${workdir}/patches/gcc-13/0001-Fix-regression-on-mcore-elf-port-after-recent-switch-conversion-change.patch"
+	fi
+	
 	if (( gcc_major >= 11 && gcc_major <= 12 )); then
 		patch --directory="${gcc_directory}" --strip='1' --input="${workdir}/submodules/obggcc/patches/gcc-11/0001-Fix-missing-definition-of-PTR-macro.patch"
 	fi
@@ -407,7 +411,7 @@ if ! [ -f "${gcc_tarball}" ]; then
 		patch --directory="${gcc_directory}" --strip='1' --input="${workdir}/submodules/obggcc/patches/gcc-4/0001-Fix-wrong-usage-of-bool.patch"
 		patch --directory="${gcc_directory}" --strip='1' --input="${workdir}/submodules/obggcc/patches/gcc-4/0001-Prevent-use-of-_unlocked-functions-and-disable-inclusion-of-malloc.h.patch"
 	elif (( gcc_major >= 6 )); then
-		true # patch --directory="${gcc_directory}" --strip='1' --input="${workdir}/submodules/obggcc/patches/gcc-6/0001-Prevent-use-of-_unlocked-functions.patch"
+		patch --directory="${gcc_directory}" --strip='1' --input="${workdir}/submodules/obggcc/patches/gcc-6/0001-Prevent-use-of-_unlocked-functions.patch"
 	fi
 	
 	if (( gcc_major >= 14 )); then
