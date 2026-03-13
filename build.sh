@@ -31,6 +31,10 @@ else
 	declare -r gcc_major="${MCORE_RELEASE}"
 fi
 
+if [ -z "${MCORE_HOME}" ]; then
+	declare -r MCORE_HOME=''
+fi
+
 set -eu
 
 declare -r revision="$(git rev-parse --short HEAD)"
@@ -696,7 +700,6 @@ for triplet in "${targets[@]}"; do
 		--with-gcc-major-version-only \
 		--with-sysroot="${toolchain_directory}/${triplet}" \
 		--with-native-system-header-dir='/include' \
-		--enable-cet='auto' \
 		--enable-checking='release' \
 		--enable-link-serialization='1' \
 		--enable-lto \
@@ -705,7 +708,6 @@ for triplet in "${targets[@]}"; do
 		--enable-plugin \
 		--enable-multilib \
 		--with-specs="${specs}" \
-		--with-pic \
 		--with-gnu-as \
 		--with-gnu-ld \
 		${extra_configure_flags} \
@@ -770,13 +772,11 @@ for triplet in "${targets[@]}"; do
 	
 	rm --force --recursive "${PWD}"
 	
-	if [ -d "${build_directory}/mcore-gcc-cross-bin/mcore-elf/lib" ]; then
-		echo "${build_directory}/mcore-gcc-cross-bin/mcore-elf/lib"
-		
+	if [ -d "${MCORE_HOME}/mcore-elf/lib" ]; then
 		cp \
 			--recursive \
 			--dereference \
-			"${build_directory}/mcore-gcc-cross-bin/mcore-elf/lib" \
+			"${MCORE_HOME}/mcore-elf/lib" \
 			"${toolchain_directory}/${triplet}"
 	else
 		cd "${toolchain_directory}/${triplet}/lib"

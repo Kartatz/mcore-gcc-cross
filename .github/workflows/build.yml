@@ -29,7 +29,7 @@ jobs:
       id: check-cache
       uses: actions/cache@main
       with:
-        key: 'cache-${{ env.MCORE_RELEASE }}'
+        key: 'cache-${{ env.MCORE_RELEASE }}.0'
         lookup-only: true
         path: |
           /tmp/x86_64-linux-gnu.tar.xz
@@ -57,7 +57,7 @@ jobs:
       if: ${{ steps.check-cache.outputs.cache-hit != 'true' }}
       uses: actions/cache@main
       with:
-        key: 'cache-${{ env.MCORE_RELEASE }}'
+        key: 'cache-${{ env.MCORE_RELEASE }}.0'
         path: |
           /tmp/x86_64-linux-gnu.tar.xz
           /tmp/x86_64-linux-gnu.tar.xz.sha256
@@ -72,49 +72,8 @@ jobs:
         target: [
           # Windows
           'x86_64-w64-mingw32',
-          'i686-w64-mingw32',
-          
-          # macOS
-          'aarch64-unknown-apple-darwin',
-          'x86_64-unknown-apple-darwin',
-          
-          # Linux (musl)
-          'aarch64-unknown-linux-musl',
-          'x86_64-unknown-linux-musl',
-          'armv6-unknown-linux-musleabihf',
-          'armv7-unknown-linux-musleabihf',
-          'i386-unknown-linux-musl',
-          
           # Linux (glibc)
-          'x86_64-unknown-linux-gnu',
-          'i386-unknown-linux-gnu',
-          'arm-unknown-linux-gnueabi',
-          'arm-unknown-linux-gnueabihf',
-          'aarch64-unknown-linux-gnu',
-          
-          # FreeBSD
-          'x86_64-unknown-freebsd',
-          'aarch64-unknown-freebsd',
-          'i386-unknown-freebsd',
-         
-          # NetBSD
-          'i386-unknown-netbsdelf',
-          'x86_64-unknown-netbsd',
-          'aarch64-unknown-netbsd',
-          
-          # DragonFly BSD
-          'x86_64-unknown-dragonfly',
-          
-          # Haiku
-          'i586-unknown-haiku',
-          'x86_64-unknown-haiku',
-          
-          # Android
-          'x86_64-unknown-linux-android',
-          'i686-unknown-linux-android21',
-          'aarch64-unknown-linux-android',
-          'riscv64-unknown-linux-android',
-          'armv7-unknown-linux-androideabi21',
+          'x86_64-unknown-linux-gnu'
         ]
     steps:
     - uses: actions/checkout@main
@@ -127,7 +86,7 @@ jobs:
     - name: Restore from cache
       uses: actions/cache@main
       with:
-        key: 'cache-${{ env.MCORE_RELEASE }}'
+        key: 'cache-${{ env.MCORE_RELEASE }}.0'
         fail-on-cache-miss: true
         path: |
           /tmp/x86_64-linux-gnu.tar.xz
@@ -138,7 +97,8 @@ jobs:
         mv '/tmp/mcore-gcc-cross' '/tmp/mcore-gcc-cross-bin'
     - name: Cross-compile MCORE to ${{ matrix.target }}
       run: |
-        export PATH="/tmp/mcore-gcc-cross-bin/bin:${PATH}"
+        export MCORE_HOME='/tmp/mcore-gcc-cross-bin'
+        export PATH="${MCORE_HOME}/bin:${PATH}"
         
         if [[ '${{ matrix.target }}' = *'-linux-musl'* ]]; then
             declare -r RAIDEN_TAG='gcc-15'
